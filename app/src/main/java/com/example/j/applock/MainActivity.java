@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
+
 
                 ArrayAdapter<String> adp = new ArrayAdapter<String>(getBaseContext(),
                         android.R.layout.simple_dropdown_item_1line, li);
