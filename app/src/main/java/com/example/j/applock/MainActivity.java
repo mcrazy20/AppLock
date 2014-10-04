@@ -12,17 +12,11 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
-import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -30,7 +24,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
-import java.util.List;
 
 import static android.widget.AdapterView.OnItemClickListener;
 
@@ -42,23 +35,21 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        /*ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> runningAppProcessInfo = am.getRunningAppProcesses();
 
-        Log.e("MAIN", runningAppProcessInfo.toString());*/
+        //This gets the PIN number and starts the service that will check for the running app.
         SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
         String pin = shared.getString("pin", "1234");
         Intent intent = new Intent(this, launchDetection.class);
         intent.putExtra("pin", pin);
         startService(intent);
+
+        //This creates listview/and selects all the app
         final DatabaseHandler db = new DatabaseHandler(getApplicationContext());
         final RelativeLayout rl = (RelativeLayout) findViewById(R.id.rl);
         final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
                 ((int) LayoutParams.WRAP_CONTENT, (int) LayoutParams.WRAP_CONTENT);
         params.leftMargin = 10;
         params.topMargin = 150;
-
-
         Button show = (Button) findViewById(R.id.button1);
         final ListView list = new ListView(this);
         InstalledApps a = new InstalledApps();
@@ -105,13 +96,17 @@ public class MainActivity extends Activity {
         return true;
     }
 
-
+    //Code for changing the pin code
     public void changePin(View V) {
         final AlertDialog.Builder dialog = new AlertDialog.Builder(getBaseContext());
         final SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
         final String pin = shared.getString("pin", "1234");
+
+        //Creating an alert dialog
         dialog.setTitle(R.string.change_title1);
         dialog.setMessage(R.string.change_dialog1);
+
+        //Allows them to use phone keyboard
         final EditText input = new EditText(getBaseContext());
         input.setRawInputType(
                 InputType.TYPE_CLASS_PHONE |
@@ -122,6 +117,8 @@ public class MainActivity extends Activity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 String test = input.getText().toString();
                 if (test.equals(pin)) {
+
+                    //After entering correct password, allows them to enter a new one. Saves to sharedpreferences
                     final AlertDialog.Builder innerdialog = new AlertDialog.Builder(getBaseContext());
                     innerdialog.setTitle(R.string.change_title2);
                     innerdialog.setMessage(R.string.change_dialog2);
@@ -150,6 +147,7 @@ public class MainActivity extends Activity {
 
                         }
                     });
+
                     AlertDialog dlg2 = innerdialog.create();
                     dlg2.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
                     dlg2.show();

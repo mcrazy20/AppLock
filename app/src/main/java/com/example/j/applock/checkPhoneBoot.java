@@ -13,6 +13,8 @@ public class checkPhoneBoot extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // TODO: This method is called when the BroadcastReceiver is receiving
         // an Intent broadcast.
+
+        //Broadcast receiver that starts running our service after the phone boots
         if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
             Intent service = new Intent(context, launchDetection.class);
             SharedPreferences shared = context.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);

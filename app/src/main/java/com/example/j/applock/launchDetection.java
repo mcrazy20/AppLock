@@ -38,16 +38,11 @@ public class launchDetection extends Service {
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
-        /*Bundle extras = intent.getExtras();
-        if (extras == null)
-        {*/
-            SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
-            pin = shared.getString("pin", "1234");
-       /* }
-        else
-        {
-            pin = extras.getString("pin");
-        }*/
+
+        SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
+        pin = shared.getString("pin", "1234");
+
+        //Handler is called from the service thread, brings up the alertdialog (google no like this)
         final Handler handler = new Handler(){
 
             @Override
@@ -87,6 +82,8 @@ public class launchDetection extends Service {
                     }
                 });
                 AlertDialog dlg = dialog.create();
+
+                //Allows alertdialog to be on top of any activity
                 dlg.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
                 dlg.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
                 dlg.show();
