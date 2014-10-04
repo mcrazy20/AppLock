@@ -1,7 +1,9 @@
 package com.example.j.applock;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +20,10 @@ public class noAppAccess extends Activity {
     protected void onStart()
     {
         super.onStart();
+        SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
+        String pin = shared.getString("pin", "1234");
         Intent intent = new Intent(this, launchDetection.class);
+        intent.putExtra("pin", pin);
         startService(intent);
     }
 

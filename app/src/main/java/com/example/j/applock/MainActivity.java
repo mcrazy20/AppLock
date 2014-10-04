@@ -82,33 +82,38 @@ public class MainActivity extends Activity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 String test = input.getText().toString();
                 if (test.equals(pin)) {
-                    final AlertDialog.Builder dialog = new AlertDialog.Builder(getBaseContext());
-                    dialog.setTitle(R.string.change_title2);
-                    dialog.setMessage(R.string.change_dialog2);
-                    final EditText input = new EditText(getBaseContext());
-                    input.setRawInputType(
+                    final AlertDialog.Builder innerdialog = new AlertDialog.Builder(getBaseContext());
+                    innerdialog.setTitle(R.string.change_title2);
+                    innerdialog.setMessage(R.string.change_dialog2);
+                    final EditText input2 = new EditText(getBaseContext());
+                    input2.setRawInputType(
                             InputType.TYPE_CLASS_PHONE |
                                     InputType.TYPE_NUMBER_VARIATION_PASSWORD);
-                    dialog.setView(input);
-                    dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    innerdialog.setView(input2);
+                    innerdialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            if (input.toString().length()>0)
+                            String innertest = input2.getText().toString();
+                            if (innertest.length()>0)
                             {
-                                shared.edit().putString("pin", input.toString());
-                                recreate();
+                                SharedPreferences.Editor myEdit = shared.edit();
+                                Log.e("TEST5", innertest);
+                                myEdit.putString("pin", innertest);
+
+                                myEdit.commit();
+                                Toast.makeText(getApplicationContext(), "Restart App to take Affect", Toast.LENGTH_LONG).show();
                             }
                         }
                     });
-                    dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    innerdialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
 
                         }
                     });
-                    AlertDialog dlg = dialog.create();
-                    dlg.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-                    dlg.show();
+                    AlertDialog dlg2 = innerdialog.create();
+                    dlg2.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                    dlg2.show();
 
                 }
 

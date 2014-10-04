@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
 import android.text.InputType;
@@ -37,7 +38,16 @@ public class launchDetection extends Service {
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
-        pin = intent.getStringExtra("pin");
+        /*Bundle extras = intent.getExtras();
+        if (extras == null)
+        {*/
+            SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
+            pin = shared.getString("pin", "1234");
+       /* }
+        else
+        {
+            pin = extras.getString("pin");
+        }*/
         final Handler handler = new Handler(){
 
             @Override
@@ -57,6 +67,7 @@ public class launchDetection extends Service {
                         String test = input.getText().toString();
                         if (!test.equals(pin))
                         {
+                            close();
                         }
                         else
                         {
@@ -77,6 +88,7 @@ public class launchDetection extends Service {
                 });
                 AlertDialog dlg = dialog.create();
                 dlg.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                dlg.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
                 dlg.show();
             }
 
@@ -121,7 +133,7 @@ public class launchDetection extends Service {
                         }
                     }
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
