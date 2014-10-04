@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.Looper;
 import android.text.InputType;
@@ -19,9 +20,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 public class launchDetection extends Service {
     private boolean checked = false;
+    boolean inHandler = false;
+    String pin = "";
     public launchDetection() {
     }
 
@@ -30,77 +35,102 @@ public class launchDetection extends Service {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
+
     public int onStartCommand(Intent intent, int flags, int startId) {
-        boolean check = true;
+        pin = intent.getStringExtra("pin");
+        final Handler handler = new Handler(){
 
-        while (check) {
-            // Return a list of the tasks that are currently running,
-            // with the most recent being first and older ones after in order.
-            // Taken 1 inside getRunningTasks method means want to take only
-            // top activity from stack and forgot the olders.
-            ActivityManager am = (ActivityManager) getBaseContext().getSystemService(Context.ACTIVITY_SERVICE);
-            List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+            @Override
+            public void close() {
+                inHandler=true;
+                final AlertDialog.Builder dialog = new AlertDialog.Builder(getBaseContext());
+                dialog.setTitle(R.string.lock_title);
+                dialog.setMessage(R.string.lock_dialog);
+                final EditText input = new EditText(getBaseContext());
+                input.setRawInputType(
+                        InputType.TYPE_CLASS_PHONE |
+                                InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+                dialog.setView(input);
+                dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String test = input.getText().toString();
+                        if (!test.equals(pin))
+                        {
+                        }
+                        else
+                        {
+                            checked = true;
+                        }
+                        inHandler=false;
 
-            String currentRunningActivityName = taskInfo.get(0).topActivity.getClassName();
-            Log.e("TEST5", currentRunningActivityName);
-
-            if (currentRunningActivityName.contains("com.spotify") && !checked) {
-                Toast.makeText(getApplicationContext(), "FOUND SPOTIFY YO", Toast.LENGTH_LONG);
-                check = false;
-                displayAlert();
+                    }
+                });
+                dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        inHandler=false;
+                        Intent intent = new Intent(getApplicationContext(), noAppAccess.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                    }
+                });
+                AlertDialog dlg = dialog.create();
+                dlg.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                dlg.show();
             }
-            else if (checked)
-            {
-                try {
-                    Thread.sleep(3600000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+
+            @Override
+            public void flush() {
+
+            }
+
+            @Override
+            public void publish(LogRecord logRecord) {
+
+            }
+        };
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                boolean check = true;
+
+                while (check) {
+                    // Return a list of the tasks that are currently running,
+                    // with the most recent being first and older ones after in order.
+                    // Taken 1 inside getRunningTasks method means want to take only
+                    // top activity from stack and forgot the olders.
+                    ActivityManager am = (ActivityManager) getBaseContext().getSystemService(Context.ACTIVITY_SERVICE);
+                    List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+
+                    String currentRunningActivityName = taskInfo.get(0).topActivity.getClassName();
+                    Log.e("TEST5", currentRunningActivityName);
+
+                    if (currentRunningActivityName.contains("com.spotify") && !checked && !inHandler) {
+                        //Toast.makeText(getApplicationContext(), "FOUND SPOTIFY YO", Toast.LENGTH_LONG);
+                        check = false;
+                        handler.close();
+                    }
+                    else if (checked)
+                    {
+                        try {
+                            Thread.sleep(3600000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
+                Looper.loop();
             }
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        }).start();
+
         return START_STICKY;
 
-    }
-
-    private void displayAlert()
-    {
-        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        dialog.setTitle(R.string.lock_title);
-        dialog.setMessage(R.string.lock_dialog);
-        final EditText input = new EditText(this);
-        input.setRawInputType(
-                InputType.TYPE_CLASS_PHONE|
-                        InputType.TYPE_NUMBER_VARIATION_PASSWORD);
-        dialog.setView(input);
-        dialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                String test = input.getText().toString();
-                if (!test.equals("1234"))
-                {
-                    displayAlert();
-                }
-                else
-                {
-                    checked = true;
-                }
-
-            }
-        });
-        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                displayAlert();
-            }
-        });
-        AlertDialog dlg = dialog.create();
-        dlg.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-        dlg.show();
-        //dlg.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
     }
 }

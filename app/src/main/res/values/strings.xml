@@ -6,5 +6,13 @@
     <string name="action_settings">Settings</string>
     <string name="lock_title">App Locked</string>
     <string name="lock_dialog">Enter pin to unlock</string>
+    <string name="title_activity_no_app_access">noAppAccess</string>
+    <string name="app_locked">You cannot access this app without a pin code!</string>
+    <string name="change_password">Change Pin</string>
+    <string name="change_title1">Current Pin</string>
+    <string name="change_dialog1">Enter Current Pin (default 1234)</string>
+    <string name="change_title2">New Pin</string>
+    <string name="change_dialog2">Enter New Pin</string>
+
 
 </resources>

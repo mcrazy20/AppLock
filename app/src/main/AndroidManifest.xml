@@ -31,6 +31,10 @@
             android:label="@string/title_activity_app_locked"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
+        <activity
+            android:name=".noAppAccess"
+            android:label="@string/title_activity_no_app_access" >
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.READ_LOGS" />
