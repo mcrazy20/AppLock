@@ -13,6 +13,7 @@
     <string name="change_dialog1">Enter Current Pin (default 1234)</string>
     <string name="change_title2">New Pin</string>
     <string name="change_dialog2">Enter New Pin</string>
+    <string name="title_activity_main">Title</string>
 
 
 </resources>
