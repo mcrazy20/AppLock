@@ -28,6 +28,7 @@ public class launchDetection extends Service {
     private boolean checked = false;
     boolean inHandler = false;
     String pin = "";
+    int msecondsToSleep = 3600000;
     public launchDetection() {
     }
 
@@ -48,6 +49,33 @@ public class launchDetection extends Service {
             @Override
             public void close() {
                 inHandler=true;
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getBaseContext());
+                builder.setTitle("How long to unlock?");
+                builder.setItems(new CharSequence[]
+                                {"5 minutes", "30 minutes", "1 hour", "4 hours"},
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // The 'which' argument contains the index position
+                                // of the selected item
+                                switch (which) {
+                                    case 0:
+                                        msecondsToSleep=300000;
+                                        break;
+                                    case 1:
+                                        msecondsToSleep=1800000;
+                                        break;
+                                    case 2:
+                                        msecondsToSleep=3600000;
+                                        break;
+                                    case 3:
+                                        msecondsToSleep=14400000;
+                                        break;
+                                }
+                            }
+                        });
+                final AlertDialog timeSelect = builder.create();
+                timeSelect.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                timeSelect.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
                 final AlertDialog.Builder dialog = new AlertDialog.Builder(getBaseContext());
                 dialog.setTitle(R.string.lock_title);
                 dialog.setMessage(R.string.lock_dialog);
@@ -67,6 +95,7 @@ public class launchDetection extends Service {
                         else
                         {
                             checked = true;
+                            timeSelect.show();
                         }
                         inHandler=false;
 
@@ -124,7 +153,7 @@ public class launchDetection extends Service {
                     else if (checked)
                     {
                         try {
-                            Thread.sleep(3600000);
+                            Thread.sleep(msecondsToSleep);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
