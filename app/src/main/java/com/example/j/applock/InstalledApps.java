@@ -9,7 +9,8 @@ import android.util.Log;
 
         import java.util.ArrayList;
         import java.util.Collections;
-        import java.util.List;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Protiva Rahman on 10/3/2014.
@@ -17,9 +18,9 @@ import android.util.Log;
 public class InstalledApps {
     ArrayList<String> getInstalledApp(Context c) {
         ArrayList<String> result = new ArrayList<String>();
-        getActivityName(c.getPackageManager());
+       
         List<PackageInfo> packs = c.getPackageManager().getInstalledPackages(0);
-        getActivityName(c.getPackageManager());
+
         List<ResolveInfo> appList;
         for (int i = 0; i < packs.size(); i++) {
             PackageInfo p = packs.get(i);
@@ -32,22 +33,24 @@ public class InstalledApps {
         return result;
     }
 
-    public void getActivityName(PackageManager pm) {
+    public HashMap<String,String> getActivityName(Context c) {
+        HashMap<String,String> res=new HashMap<String, String>();
         Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-
+        PackageManager pm = c.getPackageManager();
         List<ResolveInfo> appList = pm.queryIntentActivities(mainIntent, 0);
         Collections.sort(appList, new ResolveInfo.DisplayNameComparator(pm));
 
         for (ResolveInfo temp : appList) {
-            String t = temp.loadLabel(pm).toString();
-
-            Log.v("my logs", "package and activity name and application name= "
-                    + temp.activityInfo.packageName + "    "
-                    + temp.activityInfo.name + " " + t);
+            String name = temp.loadLabel(pm).toString();
+            String act=temp.activityInfo.packageName;
+            res.put(name,act);
+//Log.v("my logs", "package and activity name and application name= "+ temp.activityInfo.packageName + "    "+ temp.activityInfo.name + " " + name);
 
 
         }
+        return res;
     }
+
 
 }
