@@ -78,6 +78,12 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, launchDetection.class);
         intent.putExtra("pin", pin);
         startService(intent);
+        intent = new Intent(this, launchDetectionG.class);
+        intent.putExtra("pin", pin);
+        startService(intent);
+        intent = new Intent(this, launchDetectionF.class);
+        intent.putExtra("pin", pin);
+        startService(intent);
     }
 
 
@@ -223,5 +229,13 @@ public class MainActivity extends Activity {
         /*Intent intent = new Intent(this, launchDetection.class);
         intent.putExtra("pin", pin);
         startService(intent);*/
+    }
+
+    public void setLock(View V)
+    {
+        Intent i = getBaseContext().getPackageManager()
+                .getLaunchIntentForPackage( getBaseContext().getPackageName() );
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(i);
     }
 }

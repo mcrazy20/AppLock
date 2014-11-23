@@ -176,7 +176,8 @@ public class launchDetection extends Service {
                     String currentRunningActivityName = taskInfo.get(0).topActivity.getClassName();
                     Log.e("TEST5", currentRunningActivityName);
 
-                    if (((currentRunningActivityName.contains("Gallery") && gallery) || (currentRunningActivityName.contains("facebook") && facebook) ||(currentRunningActivityName.contains("android.mms") && messaging))
+                    if ((
+                            (currentRunningActivityName.contains("android.mms") && messaging))
                             && !checked && !inHandler) {
                         //Toast.makeText(getApplicationContext(), "FOUND SPOTIFY YO", Toast.LENGTH_LONG);
                         if (!canEnter){
