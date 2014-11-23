@@ -29,6 +29,9 @@ import java.util.logging.LogRecord;
 
 public class launchDetection extends Service {
     private boolean checked = false;
+    public static boolean facebook;
+    public static boolean messaging;
+    public static boolean gallery;
     boolean inHandler = false;
     String pin = "";
     int numberOfAttempts = 0;
@@ -48,7 +51,11 @@ public class launchDetection extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
+        facebook = shared.getBoolean("facebook", false);
+        messaging = shared.getBoolean("messaging", false);
+        gallery = shared.getBoolean("gallery", false);
         pin = shared.getString("pin", "1234");
+        Log.d("PINNUMBER", pin);
 
         //Handler is called from the service thread, brings up the alertdialog (google no like this)
         final Handler handler = new Handler(){
@@ -97,6 +104,7 @@ public class launchDetection extends Service {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String test = input.getText().toString();
                         if (!test.equals(pin)) {
+
                             if (numberOfAttempts >= numberOfAllowableAttempts) {
                                 canEnter = false;
                                 stopTime = System.currentTimeMillis() + 60000;
@@ -168,7 +176,8 @@ public class launchDetection extends Service {
                     String currentRunningActivityName = taskInfo.get(0).topActivity.getClassName();
                     Log.e("TEST5", currentRunningActivityName);
 
-                    if (currentRunningActivityName.contains("com.spotify") && !checked && !inHandler) {
+                    if (((currentRunningActivityName.contains("Gallery") && gallery) || (currentRunningActivityName.contains("facebook") && facebook) ||(currentRunningActivityName.contains("android.mms") && messaging))
+                            && !checked && !inHandler) {
                         //Toast.makeText(getApplicationContext(), "FOUND SPOTIFY YO", Toast.LENGTH_LONG);
                         if (!canEnter){
                             if(System.currentTimeMillis() < stopTime){

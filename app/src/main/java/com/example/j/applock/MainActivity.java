@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -28,8 +29,11 @@ import android.widget.RelativeLayout.LayoutParams;
 import static android.widget.AdapterView.OnItemClickListener;
 
 public class MainActivity extends Activity {
-
+    public static boolean facebook;
+    public static boolean messaging;
+    public static boolean gallery;
     List<String> li;
+    String pin;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,54 +42,42 @@ public class MainActivity extends Activity {
 
         //This gets the PIN number and starts the service that will check for the running app.
         SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
-        String pin = shared.getString("pin", "1234");
+        pin = shared.getString("pin", "1234");
+        facebook = shared.getBoolean("facebook", false);
+        messaging = shared.getBoolean("messaging", false);
+        gallery = shared.getBoolean("gallery", false);
+
+        Button b = (Button) findViewById(R.id.messaging);
+        if (messaging)
+        {
+            b.setBackgroundColor(Color.GREEN);
+        }
+        else
+        {
+            b.setBackgroundColor(Color.GRAY);
+        }
+        b = (Button) findViewById(R.id.gallery);
+        if (gallery)
+        {
+            b.setBackgroundColor(Color.GREEN);
+        }
+        else
+        {
+            b.setBackgroundColor(Color.GRAY);
+        }
+        b = (Button) findViewById(R.id.facebook);
+        if (facebook)
+        {
+            b.setBackgroundColor(Color.GREEN);
+        }
+        else
+        {
+            b.setBackgroundColor(Color.GRAY);
+        }
+
         Intent intent = new Intent(this, launchDetection.class);
         intent.putExtra("pin", pin);
         startService(intent);
-
-        //This creates listview/and selects all the app
-        final DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-        final RelativeLayout rl = (RelativeLayout) findViewById(R.id.rl);
-        final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams
-                ((int) LayoutParams.WRAP_CONTENT, (int) LayoutParams.WRAP_CONTENT);
-        params.leftMargin = 10;
-        params.topMargin = 150;
-        Button show = (Button) findViewById(R.id.button1);
-        final ListView list = new ListView(this);
-        InstalledApps a = new InstalledApps();
-        li = a.getInstalledApp(getApplicationContext());
-
-        show.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-
-                ArrayAdapter<String> adp = new ArrayAdapter<String>(getBaseContext(),
-                        android.R.layout.simple_dropdown_item_1line, li);
-                adp.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-
-                list.setAdapter(adp);
-                list.setLayoutParams(params);
-
-                rl.addView(list);
-                list.setOnItemClickListener(new OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        String app_name = li.get(i);
-                        if (db.isInDB(app_name))
-                            db.delete(app_name);
-                        else
-                            db.addApp(app_name);
-
-                    }
-                });
-
-            }
-
-
-        });
-        // db.getApps();
     }
 
 
@@ -165,5 +157,71 @@ public class MainActivity extends Activity {
         AlertDialog dlg = dialog.create();
         dlg.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         dlg.show();
+    }
+    public void lockFacebook(View V)
+    {
+        facebook = !facebook;
+
+        final SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
+        SharedPreferences.Editor myEdit = shared.edit();
+        myEdit.putBoolean("facebook", facebook);
+        myEdit.commit();
+        Button b = (Button) findViewById(R.id.facebook);
+        if (facebook)
+        {
+            b.setBackgroundColor(Color.GREEN);
+        }
+        else
+        {
+            b.setBackgroundColor(Color.GRAY);
+        }
+        /*Intent intent = new Intent(this, launchDetection.class);
+        intent.putExtra("pin", pin);
+        startService(intent);*/
+
+    }
+    public void lockMessaging(View V)
+    {
+        messaging = !messaging;
+
+        final SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
+        SharedPreferences.Editor myEdit = shared.edit();
+        myEdit.putBoolean("messaging", messaging);
+        myEdit.commit();
+
+        Button b = (Button) findViewById(R.id.messaging);
+        if (messaging)
+        {
+            b.setBackgroundColor(Color.GREEN);
+        }
+        else
+        {
+            b.setBackgroundColor(Color.GRAY);
+        }
+        /*Intent intent = new Intent(this, launchDetection.class);
+        intent.putExtra("pin", pin);
+        startService(intent);*/
+    }
+    public void lockGallery(View V)
+    {
+        gallery = !gallery;
+
+        final SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
+        SharedPreferences.Editor myEdit = shared.edit();
+        myEdit.putBoolean("gallery", gallery);
+        myEdit.commit();
+
+        Button b = (Button) findViewById(R.id.gallery);
+        if (gallery)
+        {
+            b.setBackgroundColor(Color.GREEN);
+        }
+        else
+        {
+            b.setBackgroundColor(Color.GRAY);
+        }
+        /*Intent intent = new Intent(this, launchDetection.class);
+        intent.putExtra("pin", pin);
+        startService(intent);*/
     }
 }
