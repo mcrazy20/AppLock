@@ -2,6 +2,8 @@ package com.example.j.applock;
 
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
 import android.text.InputType;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -28,7 +31,11 @@ public class launchDetection extends Service {
     private boolean checked = false;
     boolean inHandler = false;
     String pin = "";
+    int numberOfAttempts = 0;
+    int numberOfAllowableAttempts = 5;
     int msecondsToSleep = 3600000;
+    boolean canEnter = true;
+    long stopTime;
     public launchDetection() {
     }
 
@@ -79,6 +86,7 @@ public class launchDetection extends Service {
                 final AlertDialog.Builder dialog = new AlertDialog.Builder(getBaseContext());
                 dialog.setTitle(R.string.lock_title);
                 dialog.setMessage(R.string.lock_dialog);
+
                 final EditText input = new EditText(getBaseContext());
                 input.setRawInputType(
                         InputType.TYPE_CLASS_PHONE |
@@ -88,23 +96,37 @@ public class launchDetection extends Service {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         String test = input.getText().toString();
-                        if (!test.equals(pin))
-                        {
-                            close();
-                        }
-                        else
-                        {
+                        if (!test.equals(pin)) {
+                            if (numberOfAttempts >= numberOfAllowableAttempts) {
+                                canEnter = false;
+                                stopTime = System.currentTimeMillis() + 60000;
+                                numberOfAttempts = 0;
+                                Intent intent = new Intent(getApplicationContext(), noAppAccess.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                //Intent intent = new Intent(Intent.ACTION_MAIN);
+                                //intent.addCategory(Intent.CATEGORY_HOME);
+                                //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                //startActivity(intent);
+                                //ExitDialogFragment exitDialog = new ExitDialogFragment();
+                                //exitDialog.show(exitDialog.getFragmentManager(), "exitdialog");
+                            } else {
+                                numberOfAttempts++;
+                                close();
+                            }
+                        } else {
+                            numberOfAttempts = 0;
                             checked = true;
                             timeSelect.show();
                         }
-                        inHandler=false;
+                        inHandler = false;
 
                     }
                 });
                 dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        inHandler=false;
+                        inHandler = false;
                         Intent intent = new Intent(getApplicationContext(), noAppAccess.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
@@ -116,6 +138,7 @@ public class launchDetection extends Service {
                 dlg.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
                 dlg.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
                 dlg.show();
+
             }
 
             @Override
@@ -147,8 +170,20 @@ public class launchDetection extends Service {
 
                     if (currentRunningActivityName.contains("com.spotify") && !checked && !inHandler) {
                         //Toast.makeText(getApplicationContext(), "FOUND SPOTIFY YO", Toast.LENGTH_LONG);
-                        check = false;
-                        handler.close();
+                        if (!canEnter){
+                            if(System.currentTimeMillis() < stopTime){
+                                inHandler = false;
+                                Intent intent = new Intent(getApplicationContext(), noAppAccess.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                break;
+                            } else {
+                                canEnter = true;
+                            }
+                        } if (canEnter) {
+                            check = false;
+                            handler.close();
+                        }
                     }
                     else if (checked)
                     {
@@ -170,5 +205,24 @@ public class launchDetection extends Service {
 
         return START_STICKY;
 
+    }
+}
+
+class ExitDialogFragment extends DialogFragment {
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Entered Too Many Passwords");
+        builder.setMessage("Try again in 5 minutes");
+        builder.setNegativeButton("Ok", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+        return builder.create();
     }
 }
