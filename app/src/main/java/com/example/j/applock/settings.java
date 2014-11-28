@@ -28,7 +28,7 @@ public class settings extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         final String lockoutTriesArray[] = { "3", "5", "10", "20"};
         final String lockoutTimeArray[] = { "1 minute", "5 minutes", "30 minutes", "60 minutes"};
-
+        final SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
 
@@ -40,17 +40,34 @@ public class settings extends Activity {
         }
         final ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
         listView.setAdapter(adapter);
+        //final SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final String item = (String) parent.getItemAtPosition(position);
                 if (item.equals(getString(R.string.lockout_tries))){
-                    Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_LONG).show();
                     class NumTriesDialog extends DialogFragment{
-                        int lockoutTries;
+                        //SharedPreferences shared = getActivity().getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
+                        int lockoutTries = 5;
+                                //shared.getInt(getString(R.string.lockout_tries), 5);
                         @Override
                         public Dialog onCreateDialog(Bundle savedInstanceState){
+                            int choice;
+                            switch (lockoutTries){
+                                case 3:
+                                    choice = 0;
+                                    break;
+                                case 10:
+                                    choice = 2;
+                                    break;
+                                case 20:
+                                    choice = 3;
+                                    break;
+                                default:
+                                    choice = 1;
+                                    break;
+                            }
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setTitle(R.string.lockout_tries);
                             builder.setSingleChoiceItems(lockoutTriesArray,-1,
@@ -65,10 +82,13 @@ public class settings extends Activity {
 
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = sharedPref.edit();
+                                    SharedPreferences.Editor editor = shared.edit();
                                     editor.putInt(getString(R.string.lockout_tries), lockoutTries);
                                     editor.commit();
+                                    Intent intent = getBaseContext().getPackageManager()
+                                            .getLaunchIntentForPackage( getBaseContext().getPackageName() );
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
                                 }
                             });
                             return builder.create();
@@ -79,9 +99,26 @@ public class settings extends Activity {
                     dlg.show(getFragmentManager(), "num_tries_dialog");
                 } else if (item.equals(getString(R.string.lockout_time))){
                     class TimeDialog extends DialogFragment{
-                        int lockoutTime;
+                        //SharedPreferences shared = getActivity().getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
+                        int lockoutTime = 300000;
+                                //shared.getInt(getString(R.string.lockout_time), 300000);
                         @Override
                         public Dialog onCreateDialog(Bundle savedInstanceState){
+                            int choice;
+                            switch (lockoutTime){
+                                case 60000:
+                                    choice = 0;
+                                    break;
+                                case 1800000:
+                                    choice = 2;
+                                    break;
+                                case 3600000:
+                                    choice = 3;
+                                    break;
+                                default:
+                                    choice = 1;
+                                    break;
+                            }
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setTitle(R.string.lockout_time);
                             builder.setSingleChoiceItems(lockoutTimeArray,-1,
@@ -109,10 +146,13 @@ public class settings extends Activity {
 
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-                                    SharedPreferences.Editor editor = sharedPref.edit();
+                                    SharedPreferences.Editor editor = shared.edit();
                                     editor.putInt(getString(R.string.lockout_time), lockoutTime);
                                     editor.commit();
+                                    Intent intent = getBaseContext().getPackageManager()
+                                            .getLaunchIntentForPackage( getBaseContext().getPackageName() );
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
                                 }
                             });
                             return builder.create();

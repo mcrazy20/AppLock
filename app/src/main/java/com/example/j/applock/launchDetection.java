@@ -35,10 +35,12 @@ public class launchDetection extends Service {
     boolean inHandler = false;
     String pin = "";
     int numberOfAttempts = 0;
-    int numberOfAllowableAttempts = 5;
+    int numberOfAllowableAttempts;
+    int lockoutTime;
     int msecondsToSleep = 3600000;
     boolean canEnter = true;
     long stopTime;
+
     public launchDetection() {
     }
 
@@ -49,13 +51,15 @@ public class launchDetection extends Service {
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
         facebook = shared.getBoolean("facebook", false);
         messaging = shared.getBoolean("messaging", false);
         gallery = shared.getBoolean("gallery", false);
         pin = shared.getString("pin", "1234");
         Log.d("PINNUMBER", pin);
+        numberOfAllowableAttempts = shared.getInt(getString(R.string.lockout_tries),5);
+        lockoutTime = shared.getInt(getString(R.string.lockout_time), 300000);
+
 
         //Handler is called from the service thread, brings up the alertdialog (google no like this)
         final Handler handler = new Handler(){
@@ -105,9 +109,9 @@ public class launchDetection extends Service {
                         String test = input.getText().toString();
                         if (!test.equals(pin)) {
 
-                            if (numberOfAttempts >= numberOfAllowableAttempts) {
+                            if (numberOfAttempts >= numberOfAllowableAttempts - 1) {
                                 canEnter = false;
-                                stopTime = System.currentTimeMillis() + 60000;
+                                stopTime = System.currentTimeMillis() + lockoutTime;
                                 numberOfAttempts = 0;
                                 Intent intent = new Intent(getApplicationContext(), noAppAccess.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -179,6 +183,7 @@ public class launchDetection extends Service {
                     if ((
                             (currentRunningActivityName.contains("android.mms") && messaging))
                             && !checked && !inHandler) {
+
                         //Toast.makeText(getApplicationContext(), "FOUND SPOTIFY YO", Toast.LENGTH_LONG);
                         if (!canEnter){
                             if(System.currentTimeMillis() < stopTime){

@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -34,6 +35,8 @@ public class MainActivity extends Activity {
     public static boolean facebook;
     public static boolean messaging;
     public static boolean gallery;
+    public static int lockoutTries;
+    public static int lockoutTime;
     List<String> li;
     String pin;
 
@@ -48,6 +51,8 @@ public class MainActivity extends Activity {
         facebook = shared.getBoolean("facebook", false);
         messaging = shared.getBoolean("messaging", false);
         gallery = shared.getBoolean("gallery", false);
+        lockoutTries = shared.getInt(getString(R.string.lockout_tries), 5);
+        lockoutTime = shared.getInt(getString(R.string.lockout_time), 300000);
 
         Button b = (Button) findViewById(R.id.messaging);
         if (messaging)

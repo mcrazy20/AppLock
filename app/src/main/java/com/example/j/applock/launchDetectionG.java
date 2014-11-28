@@ -35,7 +35,8 @@ public class launchDetectionG extends Service {
     boolean inHandler = false;
     String pin = "";
     int numberOfAttempts = 0;
-    int numberOfAllowableAttempts = 5;
+    int numberOfAllowableAttempts;
+    int lockoutTime;
     int msecondsToSleep = 3600000;
     boolean canEnter = true;
     long stopTime;
@@ -54,6 +55,8 @@ public class launchDetectionG extends Service {
         gallery = shared.getBoolean("gallery", false);
         pin = shared.getString("pin", "1234");
         Log.d("PINNUMBER", pin);
+        numberOfAllowableAttempts = shared.getInt(getString(R.string.lockout_tries),5);
+        lockoutTime = shared.getInt(getString(R.string.lockout_time), 300000);
 
         //Handler is called from the service thread, brings up the alertdialog (google no like this)
         final Handler handler = new Handler(){
@@ -103,7 +106,7 @@ public class launchDetectionG extends Service {
                         String test = input.getText().toString();
                         if (!test.equals(pin)) {
 
-                            if (numberOfAttempts >= numberOfAllowableAttempts) {
+                            if (numberOfAttempts >= numberOfAllowableAttempts - 1) {
                                 canEnter = false;
                                 stopTime = System.currentTimeMillis() + 60000;
                                 numberOfAttempts = 0;
