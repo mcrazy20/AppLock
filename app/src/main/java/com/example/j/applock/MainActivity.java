@@ -47,7 +47,15 @@ public class MainActivity extends Activity {
         gallery = shared.getBoolean("gallery", false);
         lockoutTries = shared.getInt(getString(R.string.lockout_tries), 5);
         lockoutTime = shared.getInt(getString(R.string.lockout_time), 300000);
-
+        Intent intent = new Intent(this, launchDetection.class);
+        intent.putExtra("pin", pin);
+        startService(intent);
+        intent = new Intent(this, launchDetectionG.class);
+        intent.putExtra("pin", pin);
+        startService(intent);
+        intent = new Intent(this, launchDetectionF.class);
+        intent.putExtra("pin", pin);
+        startService(intent);
     }
 
 

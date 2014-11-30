@@ -52,7 +52,7 @@ public class launchDetectionF extends Service {
         SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
         facebook = shared.getBoolean("facebook", false);
         pin = shared.getString("pin_facebook", "1234");
-        Log.d("PINNUMBER", pin);
+        //Log.d("PINNUMBER", pin);
         numberOfAllowableAttempts = shared.getInt(getString(R.string.lockout_tries),5);
         lockoutTime = shared.getInt(getString(R.string.lockout_time), 300000);
 
@@ -106,17 +106,11 @@ public class launchDetectionF extends Service {
 
                             if (numberOfAttempts >= numberOfAllowableAttempts - 1) {
                                 canEnter = false;
-                                stopTime = System.currentTimeMillis() + 60000;
+                                stopTime = System.currentTimeMillis() + lockoutTime;
                                 numberOfAttempts = 0;
                                 Intent intent = new Intent(getApplicationContext(), noAppAccess.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
-                                //Intent intent = new Intent(Intent.ACTION_MAIN);
-                                //intent.addCategory(Intent.CATEGORY_HOME);
-                                //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                //startActivity(intent);
-                                //ExitDialogFragment exitDialog = new ExitDialogFragment();
-                                //exitDialog.show(exitDialog.getFragmentManager(), "exitdialog");
                             } else {
                                 numberOfAttempts++;
                                 close();
@@ -202,7 +196,7 @@ public class launchDetectionF extends Service {
                         }
                     }
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

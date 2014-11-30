@@ -57,15 +57,6 @@ public class setLocks extends Activity {
             b.setBackgroundColor(Color.GRAY);
         }
 
-        Intent intent = new Intent(this, launchDetection.class);
-        intent.putExtra("pin", pin);
-        startService(intent);
-        intent = new Intent(this, launchDetectionG.class);
-        intent.putExtra("pin", pin);
-        startService(intent);
-        intent = new Intent(this, launchDetectionF.class);
-        intent.putExtra("pin", pin);
-        startService(intent);
     }
 
     public void lockFacebook(View V)

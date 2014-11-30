@@ -38,7 +38,6 @@ public class launchDetection extends Service {
     int msecondsToSleep = 3600000;
     boolean canEnter = true;
     long stopTime;
-
     public launchDetection() {
     }
 
@@ -112,12 +111,6 @@ public class launchDetection extends Service {
                                 Intent intent = new Intent(getApplicationContext(), noAppAccess.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
-                                //Intent intent = new Intent(Intent.ACTION_MAIN);
-                                //intent.addCategory(Intent.CATEGORY_HOME);
-                                //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                //startActivity(intent);
-                                //ExitDialogFragment exitDialog = new ExitDialogFragment();
-                                //exitDialog.show(exitDialog.getFragmentManager(), "exitdialog");
                             } else {
                                 numberOfAttempts++;
                                 close();
@@ -205,7 +198,7 @@ public class launchDetection extends Service {
                         }
                     }
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(2000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -219,21 +212,3 @@ public class launchDetection extends Service {
     }
 }
 
-class ExitDialogFragment extends DialogFragment {
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState){
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Entered Too Many Passwords");
-        builder.setMessage("Try again in 5 minutes");
-        builder.setNegativeButton("Ok", new DialogInterface.OnClickListener(){
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.addCategory(Intent.CATEGORY_HOME);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
-        });
-        return builder.create();
-    }
-}
