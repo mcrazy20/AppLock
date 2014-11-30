@@ -48,26 +48,9 @@ public class settings extends Activity {
                 final String item = (String) parent.getItemAtPosition(position);
                 if (item.equals(getString(R.string.lockout_tries))){
                     class NumTriesDialog extends DialogFragment{
-                        //SharedPreferences shared = getActivity().getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
-                        int lockoutTries = 5;
-                                //shared.getInt(getString(R.string.lockout_tries), 5);
+                        int lockoutTries;
                         @Override
                         public Dialog onCreateDialog(Bundle savedInstanceState){
-                            int choice;
-                            switch (lockoutTries){
-                                case 3:
-                                    choice = 0;
-                                    break;
-                                case 10:
-                                    choice = 2;
-                                    break;
-                                case 20:
-                                    choice = 3;
-                                    break;
-                                default:
-                                    choice = 1;
-                                    break;
-                            }
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setTitle(R.string.lockout_tries);
                             builder.setSingleChoiceItems(lockoutTriesArray,-1,
@@ -99,26 +82,9 @@ public class settings extends Activity {
                     dlg.show(getFragmentManager(), "num_tries_dialog");
                 } else if (item.equals(getString(R.string.lockout_time))){
                     class TimeDialog extends DialogFragment{
-                        //SharedPreferences shared = getActivity().getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
-                        int lockoutTime = 300000;
-                                //shared.getInt(getString(R.string.lockout_time), 300000);
+                        int lockoutTime;
                         @Override
                         public Dialog onCreateDialog(Bundle savedInstanceState){
-                            int choice;
-                            switch (lockoutTime){
-                                case 60000:
-                                    choice = 0;
-                                    break;
-                                case 1800000:
-                                    choice = 2;
-                                    break;
-                                case 3600000:
-                                    choice = 3;
-                                    break;
-                                default:
-                                    choice = 1;
-                                    break;
-                            }
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setTitle(R.string.lockout_time);
                             builder.setSingleChoiceItems(lockoutTimeArray,-1,

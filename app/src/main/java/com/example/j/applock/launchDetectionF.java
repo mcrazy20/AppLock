@@ -30,8 +30,6 @@ import java.util.logging.LogRecord;
 public class launchDetectionF extends Service {
     private boolean checked = false;
     public static boolean facebook;
-    public static boolean messaging;
-    public static boolean gallery;
     boolean inHandler = false;
     String pin = "";
     int numberOfAttempts = 0;
@@ -53,9 +51,7 @@ public class launchDetectionF extends Service {
 
         SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
         facebook = shared.getBoolean("facebook", false);
-        messaging = shared.getBoolean("messaging", false);
-        gallery = shared.getBoolean("gallery", false);
-        pin = shared.getString("pin", "1234");
+        pin = shared.getString("pin_facebook", "1234");
         Log.d("PINNUMBER", pin);
         numberOfAllowableAttempts = shared.getInt(getString(R.string.lockout_tries),5);
         lockoutTime = shared.getInt(getString(R.string.lockout_time), 300000);

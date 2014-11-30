@@ -39,15 +39,22 @@ public class MainActivity extends Activity {
     public static int lockoutTime;
     List<String> li;
     String pin;
+    String pin_facebook;
+    String pin_messaging;
+    String pin_gallery;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         //This gets the PIN number and starts the service that will check for the running app.
         SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
+
         pin = shared.getString("pin", "1234");
+        pin_facebook = shared.getString("pin_facebook","1234");
+        pin_messaging = shared.getString("pin_messaging","1234");
+        pin_gallery = shared.getString("pin_gallery","1234");
         facebook = shared.getBoolean("facebook", false);
         messaging = shared.getBoolean("messaging", false);
         gallery = shared.getBoolean("gallery", false);
@@ -91,6 +98,7 @@ public class MainActivity extends Activity {
         intent = new Intent(this, launchDetectionF.class);
         intent.putExtra("pin", pin);
         startService(intent);
+
     }
 
 
@@ -114,12 +122,13 @@ public class MainActivity extends Activity {
         }
     }
 
+
     //Code for changing the pin code
     public void changePin(View V) {
+        final Intent intent = new Intent(this, changePin.class);
         final AlertDialog.Builder dialog = new AlertDialog.Builder(getBaseContext());
         final SharedPreferences shared = this.getSharedPreferences("com.example.j.applock", Context.MODE_PRIVATE);
         final String pin = shared.getString("pin", "1234");
-
         //Creating an alert dialog
         dialog.setTitle(R.string.change_title1);
         dialog.setMessage(R.string.change_dialog1);
@@ -135,43 +144,10 @@ public class MainActivity extends Activity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 String test = input.getText().toString();
                 if (test.equals(pin)) {
-
-                    //After entering correct password, allows them to enter a new one. Saves to sharedpreferences
-                    final AlertDialog.Builder innerdialog = new AlertDialog.Builder(getBaseContext());
-                    innerdialog.setTitle(R.string.change_title2);
-                    innerdialog.setMessage(R.string.change_dialog2);
-                    final EditText input2 = new EditText(getBaseContext());
-                    input2.setRawInputType(
-                            InputType.TYPE_CLASS_PHONE |
-                                    InputType.TYPE_NUMBER_VARIATION_PASSWORD);
-                    innerdialog.setView(input2);
-                    innerdialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            String innertest = input2.getText().toString();
-                            if (innertest.length() > 0) {
-                                SharedPreferences.Editor myEdit = shared.edit();
-                                Log.e("TEST5", innertest);
-                                myEdit.putString("pin", innertest);
-
-                                myEdit.commit();
-                                Toast.makeText(getApplicationContext(), "Restart App to take Affect", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-                    innerdialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-
-                        }
-                    });
-
-                    AlertDialog dlg2 = innerdialog.create();
-                    dlg2.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-                    dlg2.show();
-
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Incorrect Pin", Toast.LENGTH_LONG).show();
                 }
-
             }
         });
         dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -184,6 +160,7 @@ public class MainActivity extends Activity {
         dlg.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         dlg.show();
     }
+
     public void lockFacebook(View V)
     {
         facebook = !facebook;
@@ -201,10 +178,6 @@ public class MainActivity extends Activity {
         {
             b.setBackgroundColor(Color.GRAY);
         }
-        /*Intent intent = new Intent(this, launchDetection.class);
-        intent.putExtra("pin", pin);
-        startService(intent);*/
-
     }
     public void lockMessaging(View V)
     {
@@ -224,9 +197,6 @@ public class MainActivity extends Activity {
         {
             b.setBackgroundColor(Color.GRAY);
         }
-        /*Intent intent = new Intent(this, launchDetection.class);
-        intent.putExtra("pin", pin);
-        startService(intent);*/
     }
     public void lockGallery(View V)
     {
@@ -246,9 +216,6 @@ public class MainActivity extends Activity {
         {
             b.setBackgroundColor(Color.GRAY);
         }
-        /*Intent intent = new Intent(this, launchDetection.class);
-        intent.putExtra("pin", pin);
-        startService(intent);*/
     }
 
     public void setLock(View V)
