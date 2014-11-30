@@ -16,38 +16,12 @@
         android:text="@string/change_password"
         android:onClick="changePin"
         />
-    <Button
-        android:id="@+id/facebook"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="lockFacebook"
-        android:layout_below="@id/changePin"
-        android:text="Facebook"
-        />
-
-    <Button
-        android:id="@+id/messaging"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="lockMessaging"
-        android:layout_below="@id/facebook"
-        android:text="Messaging"
-        />
-
-    <Button
-        android:id="@+id/gallery"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="lockGallery"
-        android:layout_below="@id/messaging"
-        android:text="Gallery"
-        />
 
     <Button
         android:id="@+id/setLock"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/gallery"
+        android:layout_below="@id/changePin"
         android:onClick="setLock"
         android:text="Set Locks"/>
 
